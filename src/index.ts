@@ -39,8 +39,8 @@ joplin.plugins.register({
       type: SettingItemType.String,
       section: 'openRandomNoteSection',
       public: true,
-      description: 'Set a custom hotkey to open random notes from your vault',
-      label: 'Create Custom Hotkey',
+      description: 'Separate your keys with a +',
+      label: 'Enter Custom Hotkey',
     });
 
     // Create Command
@@ -50,6 +50,7 @@ joplin.plugins.register({
       execute: async () => {
         // get all notes
         const notes = await joplin.data.get(['notes'], { field: ['id'] });
+
         // Open random note
         console.log('Initial note ary: ', notes.items);
         if (notes.items) {
@@ -81,9 +82,16 @@ joplin.plugins.register({
 
     let useCustomHotKey = await joplin.settings.value('useCustomHotkey');
 
+    const customHotKey = await joplin.settings.value('customHotkey');
+
     const defualtAccelerator = 'Ctrl+Alt+R';
     let accelerator = '';
-    const customHotKey = await joplin.settings.value('customHotkey');
+
+    // validating custom hotkey
+    const regex = /\s+/g;
+
+    // removing whitespace if there is from custom key
+    const cleanedCustomHotKey = customHotKey.replace(regex, '');
 
     // if custom hotkey option is true but no hotkey entered
     if (useCustomHotKey === false && useDefualtHotKey === false) {
@@ -93,8 +101,9 @@ joplin.plugins.register({
       );
       accelerator = defualtAccelerator;
     } else if (useCustomHotKey && useDefualtHotKey) {
-      if (customHotKey.length > 0) {
-        accelerator = customHotKey;
+      if (customHotKey.length > 0 && customHotKey != ' ') {
+        await joplin.settings.setValue('defualtHotkey', false);
+        accelerator = cleanedCustomHotKey;
       } else {
         await joplin.settings.setValue('defualtHotkey', true);
         alert(
@@ -103,9 +112,8 @@ joplin.plugins.register({
         accelerator = defualtAccelerator;
       }
     } else if (useDefualtHotKey === false && useCustomHotKey) {
-      if (customHotKey.length > 0) {
-        await joplin.settings.setValue('customHotkey', '');
-        accelerator = customHotKey;
+      if (customHotKey.length > 0 && customHotKey != ' ') {
+        accelerator = cleanedCustomHotKey;
       } else {
         await joplin.settings.setValue('defualtHotkey', true);
         alert(
@@ -114,8 +122,6 @@ joplin.plugins.register({
         accelerator = defualtAccelerator;
       }
     }
-
-    // validate custom hot key
 
     console.log(
       'defualt key',

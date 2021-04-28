@@ -78,16 +78,12 @@ joplin.plugins.register({
     }
     // validate custom hot key
 
-    if (useDefualtHotKey === true && customHotKey.length > 0) {
-      useDefualtHotKey = false;
-      accelerator = customHotKey;
-    }
-
     if (useDefualtHotKey && customHotKey.length === 0) {
       accelerator = defualtAccelerator;
     }
 
     if (customHotKey.length > 0) {
+      useDefualtHotKey = false;
       accelerator = customHotKey;
     }
 

@@ -68,18 +68,38 @@ joplin.plugins.register({
     });
 
     // Get Options
-    const useDefualtHotKey = await joplin.settings.value('defualtHotkey');
-
+    let useDefualtHotKey = await joplin.settings.value('defualtHotkey');
+    const defualtAccelerator = 'Ctrl+Alt+R';
+    let accelerator = '';
     const customHotKey = await joplin.settings.value('customHotkey');
-    console.log('custom hotkey: ', customHotKey);
-    console.log('defualt hotkey: ', useDefualtHotKey);
+    if (customHotKey.length === 0 && useDefualtHotKey === false) {
+      useDefualtHotKey = true;
+      accelerator = defualtAccelerator;
+    }
+    // validate custom hot key
+
+    if (useDefualtHotKey === true && customHotKey.length > 0) {
+      useDefualtHotKey = false;
+      accelerator = customHotKey;
+    }
+
+    if (useDefualtHotKey && customHotKey.length === 0) {
+      accelerator = defualtAccelerator;
+    }
+
+    if (customHotKey.length > 0) {
+      accelerator = customHotKey;
+    }
 
     await joplin.views.menuItems.create(
       'openRandomNoteMenu',
       'openRandomNote',
       MenuItemLocation.Tools,
       // create custom hotkey
-      { accelerator: 'Ctrl+Alt+R' }
+      { accelerator: accelerator }
     );
+
+    console.log('custom hotkey: ', customHotKey);
+    console.log('defualt hotkey: ', useDefualtHotKey);
   },
 });

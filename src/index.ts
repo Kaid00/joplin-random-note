@@ -25,6 +25,15 @@ joplin.plugins.register({
       description: 'Use Defualt Hotkey',
     });
 
+    await joplin.settings.registerSetting('useCustomHotkey', {
+      value: false,
+      type: SettingItemType.Bool,
+      section: 'openRandomNoteSection',
+      label: 'Use Custom Hotkey',
+      public: true,
+      description: 'Enter custom hotkey after selecting this option',
+    });
+
     await joplin.settings.registerSetting('customHotkey', {
       value: '',
       type: SettingItemType.String,
@@ -69,9 +78,11 @@ joplin.plugins.register({
 
     // Get Options
     let useDefualtHotKey = await joplin.settings.value('defualtHotkey');
+
     const defualtAccelerator = 'Ctrl+Alt+R';
     let accelerator = '';
     const customHotKey = await joplin.settings.value('customHotkey');
+
     if (customHotKey.length === 0 && useDefualtHotKey === false) {
       useDefualtHotKey = true;
       accelerator = defualtAccelerator;
@@ -84,8 +95,17 @@ joplin.plugins.register({
 
     if (customHotKey.length > 0) {
       useDefualtHotKey = false;
+      await joplin.settings.setValue('defualtHotkey', false);
       accelerator = customHotKey;
     }
+
+    console.log(
+      'defualt key',
+      useDefualtHotKey,
+      'which is ',
+      defualtAccelerator
+    );
+    console.log('custom key', customHotKey);
 
     await joplin.views.menuItems.create(
       'openRandomNoteMenu',
@@ -94,8 +114,5 @@ joplin.plugins.register({
       // create custom hotkey
       { accelerator: accelerator }
     );
-
-    console.log('custom hotkey: ', customHotKey);
-    console.log('defualt hotkey: ', useDefualtHotKey);
   },
 });

@@ -47,6 +47,7 @@ joplin.plugins.register({
     await joplin.commands.register({
       name: 'openRandomNote',
       label: 'Open a random note',
+
       execute: async () => {
         // get all notes
         const notes = await joplin.data.get(['notes'], { field: ['id'] });
@@ -84,8 +85,18 @@ joplin.plugins.register({
     const regex = /\s+/g;
 
     // removing whitespace if there is from custom key
-    const cleanedCustomHotKey = customHotKey.replace(regex, '');
+    const whiteSpaceClean = customHotKey.replace(regex, '');
+    const spaceCustom = whiteSpaceClean.replace(/\+/g, ' ');
+    const keySplit = spaceCustom.split(' ');
+
+    const wordValidate = keySplit.map((word) => {
+      return (word = word[0].toUpperCase() + word.substr(1));
+    });
+
+    const validatedHotKeys = wordValidate.join('+');
+
     let test = '3';
+
     // if custom hotkey option is true but no hotkey entered
     if (useCustomHotKey === false) {
       // await joplin.settings.setValue('defualtHotkey', true);
@@ -97,8 +108,8 @@ joplin.plugins.register({
       test = defualtAccelerator;
     } else {
       if (customHotKey.length > 0 && customHotKey != ' ') {
-        test = cleanedCustomHotKey;
-        alert(`what we use, ${cleanedCustomHotKey}`);
+        test = validatedHotKeys;
+        alert(`what we use, ${whiteSpaceClean}`);
       } else {
         // await joplin.settings.setValue('defualtHotkey', true);
         alert(
@@ -125,11 +136,16 @@ joplin.plugins.register({
       { accelerator: test }
     );
 
-    await joplin.views.menus.create('myMenu', 'Create Note From Text', [
+    await joplin.views.menus.create('myMenu', 'Open Random Note', [
       {
         commandName: 'openRandomNote',
         accelerator: test,
       },
     ]);
+    await joplin.views.toolbarButtons.create(
+      'openRandomNoteMenuViaToolbar',
+      'openRandomNote',
+      ToolbarButtonLocation.EditorToolbar
+    );
   },
 });

@@ -8,6 +8,7 @@ The plugin opens a note at random from your vault, after installing the plugin y
 - [Usage](#usage)
 - [Development](#usage)
 - [Building the plugin](#Building-the-plugin)
+- [Roadmap](#Roadmap)
 - [License](#license)
 
 ## Installation

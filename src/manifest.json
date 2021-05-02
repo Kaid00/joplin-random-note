@@ -6,7 +6,7 @@
   "name": "Random note",
   "description": "Opens a random note from your vault",
   "author": "Azamah Junior",
-  "homepage_url": "https://github.com/Kaid00/joplin-random-note.git",
-  "repository_url": "https://github.com/Kaid00/joplin-note-statistics/blob/master/README.md",
+  "homepage_url": "https://github.com/Kaid00/joplin-random-note/blob/master/README.md",
+  "repository_url": "https://github.com/Kaid00/joplin-random-note.git",
   "keywords": ["note", "random", "random note"]
 }

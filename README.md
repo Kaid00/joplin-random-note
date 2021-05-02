@@ -64,7 +64,7 @@ To update the plugin framework, run `npm run update`.
 ## Roadmap
 
 - [x] Open Random Note
-- [ ] Open random note from tag
+- [ ] Open Tagged Random Note
 
 ## License
 

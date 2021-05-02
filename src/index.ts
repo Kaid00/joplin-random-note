@@ -16,14 +16,14 @@ joplin.plugins.register({
 
     // separate each key with a space
     // Use Defualt Hotkey
-    // await joplin.settings.registerSetting('defualtHotkey', {
-    //   value: true,
-    //   type: SettingItemType.Bool,
-    //   section: 'openRandomNoteSection',
-    //   label: 'Ctrl+Alt+R',
-    //   public: true,
-    //   description: 'Use Defualt Hotkey',
-    // });
+    await joplin.settings.registerSetting('showToolBarIcon', {
+      value: true,
+      type: SettingItemType.Bool,
+      section: 'openRandomNoteSection',
+      label: 'Show Tool Bar Button',
+      public: true,
+      description: 'Alternative to using Hotkeys to open random notes',
+    });
 
     await joplin.settings.registerSetting('useCustomHotkey', {
       value: false,
@@ -47,7 +47,7 @@ joplin.plugins.register({
     await joplin.commands.register({
       name: 'openRandomNote',
       label: 'Open a random note',
-
+      iconName: 'fas fa-random',
       execute: async () => {
         // get all notes
         const notes = await joplin.data.get(['notes'], { field: ['id'] });
@@ -78,6 +78,7 @@ joplin.plugins.register({
     let useCustomHotKey = await joplin.settings.value('useCustomHotkey');
 
     const customHotKey = await joplin.settings.value('customHotkey');
+    const toolBarDecision = await joplin.settings.value('showToolBarIcon');
 
     const defualtAccelerator = 'Ctrl+Alt+R';
 
@@ -142,10 +143,13 @@ joplin.plugins.register({
         accelerator: test,
       },
     ]);
-    await joplin.views.toolbarButtons.create(
-      'openRandomNoteMenuViaToolbar',
-      'openRandomNote',
-      ToolbarButtonLocation.EditorToolbar
-    );
+
+    if (toolBarDecision) {
+      await joplin.views.toolbarButtons.create(
+        'openRandomNoteMenuViaToolbar',
+        'openRandomNote',
+        ToolbarButtonLocation.EditorToolbar
+      );
+    }
   },
 });

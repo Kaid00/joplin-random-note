@@ -61,6 +61,11 @@ If you want to build the plugin by your own simply run `npm run dist`.
 
 To update the plugin framework, run `npm run update`.
 
+## Roadmap
+
+- [x] Open Random Note
+- [ ] Open random note from tag
+
 ## License
 
 Copyright (c) 2021 Azamah Junior

@@ -4,18 +4,16 @@ import {
   ToolbarButtonLocation,
   SettingItemType,
 } from 'api/types';
-import { settings } from 'node:cluster';
 
 joplin.plugins.register({
   onStart: async function () {
-    // Registering Settings Section
+    //Registering  Section
     await joplin.settings.registerSection('openRandomNoteSection', {
       label: 'Random Note',
       iconName: 'fas fa-random',
     });
 
-    // separate each key with a space
-    // Use Defualt Hotkey
+    // Settings
     await joplin.settings.registerSetting('showToolBarIcon', {
       value: true,
       type: SettingItemType.Bool,
@@ -43,7 +41,7 @@ joplin.plugins.register({
       label: 'Enter Custom Hotkey',
     });
 
-    //Commands
+    // Commands
     await joplin.commands.register({
       name: 'openRandomNote',
       label: 'Open a random note',
@@ -51,6 +49,7 @@ joplin.plugins.register({
       execute: async () => {
         // get all notes
         const notes = await joplin.data.get(['notes'], { field: ['id'] });
+        // If notes exist in vault
         if (notes.items) {
           // get current note
           const currentNote = await joplin.workspace.selectedNote();
@@ -62,10 +61,9 @@ joplin.plugins.register({
             }
           });
 
-          // random note id
+          // calculating a random note id
           const randomNoteId = Math.floor(Math.random() * filteredNotes.length);
 
-          // open random note
           await joplin.commands.execute(
             'openNote',
             filteredNotes[randomNoteId].id
@@ -74,7 +72,7 @@ joplin.plugins.register({
       },
     });
 
-    // Get Options
+    // Get Settings Options
     let useCustomHotKey = await joplin.settings.value('useCustomHotkey');
 
     const customHotKey = await joplin.settings.value('customHotkey');
@@ -83,11 +81,12 @@ joplin.plugins.register({
     const defualtAccelerator = 'Ctrl+Alt+R';
 
     // validating custom hotkey
+    // Regex to get all whitespace
     const regex = /\s+/g;
 
-    // removing whitespace if there is from custom key
-    const whiteSpaceClean = customHotKey.replace(regex, '');
-    const spaceCustom = whiteSpaceClean.replace(/\+/g, ' ');
+    const cleanWhiteSpace = customHotKey.replace(regex, '');
+    const spaceCustom = cleanWhiteSpace.replace(/\+/g, ' ');
+
     const keySplit = spaceCustom.split(' ');
 
     const wordValidate = keySplit.map((word) => {
@@ -96,51 +95,29 @@ joplin.plugins.register({
 
     const validatedHotKeys = wordValidate.join('+');
 
-    let test = '3';
+    let key;
 
-    // if custom hotkey option is true but no hotkey entered
     if (useCustomHotKey === false) {
-      // await joplin.settings.setValue('defualtHotkey', true);
-
-      alert(
-        `Defualt hotkey will be used for the Random note Plugin:  ${defualtAccelerator}`
-      );
-
-      test = defualtAccelerator;
+      key = defualtAccelerator;
     } else {
       if (customHotKey.length > 0 && customHotKey != ' ') {
-        test = validatedHotKeys;
-        alert(`what we use, ${whiteSpaceClean}`);
+        key = validatedHotKeys;
       } else {
-        // await joplin.settings.setValue('defualtHotkey', true);
-        alert(
-          `Custom Hotkey not specified, Defualt hotkey will be used for opening Random notes: ${defualtAccelerator}`
-        );
-
-        test = defualtAccelerator;
-        // await joplin.settings.setValue('defualtHotkey', false);
+        key = defualtAccelerator;
       }
     }
-
-    console.log('custom key', customHotKey);
-    console.log('test key', test);
-
-    console.log('Use custom key', useCustomHotKey);
-    console.log('defualt key', defualtAccelerator);
-
-    // let useDefualtHotKey = await joplin.settings.value('defualtHotkey');
 
     await joplin.views.menuItems.create(
       'openRandomNoteMenu',
       'openRandomNote',
       MenuItemLocation.EditorContextMenu,
-      { accelerator: test }
+      { accelerator: key }
     );
 
     await joplin.views.menus.create('myMenu', 'Open Random Note', [
       {
         commandName: 'openRandomNote',
-        accelerator: test,
+        accelerator: key,
       },
     ]);
 

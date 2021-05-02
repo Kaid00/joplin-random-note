@@ -33,7 +33,7 @@ joplin.plugins.register({
     });
 
     await joplin.settings.registerSetting('customHotkey', {
-      value: '',
+      value: 'Ctrl+Alt+R',
       type: SettingItemType.String,
       section: 'openRandomNoteSection',
       public: true,
@@ -81,28 +81,35 @@ joplin.plugins.register({
     const defualtAccelerator = 'Ctrl+Alt+R';
 
     // validating custom hotkey
-    // Regex to get all whitespace
-    const regex = /\s+/g;
 
-    const cleanWhiteSpace = customHotKey.replace(regex, '');
-    const spaceCustom = cleanWhiteSpace.replace(/\+/g, ' ');
+    function validate(customHotKey) {
+      if (customHotKey != '' || customHotKey != ' ') {
+        // Regex to get all whitespace
+        const regex = /\s+/g;
+        let validatedHotKeys;
+        const cleanWhiteSpace = customHotKey.replace(regex, '');
+        const spaceCustom = cleanWhiteSpace.replace(/\+/g, ' ');
 
-    const keySplit = spaceCustom.split(' ');
+        const keySplit = spaceCustom.split(' ');
 
-    const wordValidate = keySplit.map((word) => {
-      return (word = word[0].toUpperCase() + word.substr(1));
-    });
+        const wordValidate = keySplit.map((word) => {
+          return (word = word[0].toUpperCase() + word.substr(1));
+        });
 
-    const validatedHotKeys = wordValidate.join('+');
+        validatedHotKeys = wordValidate.join('+');
+        return validatedHotKeys;
+      }
+    }
 
     let key;
 
     if (useCustomHotKey === false) {
       key = defualtAccelerator;
     } else {
-      if (customHotKey.length > 0 && customHotKey != ' ') {
-        key = validatedHotKeys;
+      if (customHotKey.length > 0) {
+        key = validate(customHotKey);
       } else {
+        await joplin.settings.setValue('customHotkey', defualtAccelerator);
         key = defualtAccelerator;
       }
     }

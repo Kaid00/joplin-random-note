@@ -16,14 +16,14 @@ joplin.plugins.register({
 
     // separate each key with a space
     // Use Defualt Hotkey
-    await joplin.settings.registerSetting('defualtHotkey', {
-      value: true,
-      type: SettingItemType.Bool,
-      section: 'openRandomNoteSection',
-      label: 'Ctrl+Alt+R',
-      public: true,
-      description: 'Use Defualt Hotkey',
-    });
+    // await joplin.settings.registerSetting('defualtHotkey', {
+    //   value: true,
+    //   type: SettingItemType.Bool,
+    //   section: 'openRandomNoteSection',
+    //   label: 'Ctrl+Alt+R',
+    //   public: true,
+    //   description: 'Use Defualt Hotkey',
+    // });
 
     await joplin.settings.registerSetting('useCustomHotkey', {
       value: false,
@@ -43,16 +43,13 @@ joplin.plugins.register({
       label: 'Enter Custom Hotkey',
     });
 
-    // Create Command
+    //Commands
     await joplin.commands.register({
       name: 'openRandomNote',
-      label: 'Open a random note from vault',
+      label: 'Open a random note',
       execute: async () => {
         // get all notes
         const notes = await joplin.data.get(['notes'], { field: ['id'] });
-
-        // Open random note
-        console.log('Initial note ary: ', notes.items);
         if (notes.items) {
           // get current note
           const currentNote = await joplin.workspace.selectedNote();
@@ -67,7 +64,6 @@ joplin.plugins.register({
           // random note id
           const randomNoteId = Math.floor(Math.random() * filteredNotes.length);
 
-          console.log('Random note : ', filteredNotes[randomNoteId].id);
           // open random note
           await joplin.commands.execute(
             'openNote',
@@ -78,66 +74,62 @@ joplin.plugins.register({
     });
 
     // Get Options
-    let useDefualtHotKey = await joplin.settings.value('defualtHotkey');
-
     let useCustomHotKey = await joplin.settings.value('useCustomHotkey');
 
     const customHotKey = await joplin.settings.value('customHotkey');
 
     const defualtAccelerator = 'Ctrl+Alt+R';
-    let accelerator = '';
 
     // validating custom hotkey
     const regex = /\s+/g;
 
     // removing whitespace if there is from custom key
     const cleanedCustomHotKey = customHotKey.replace(regex, '');
-
+    let test = '3';
     // if custom hotkey option is true but no hotkey entered
-    if (useCustomHotKey === false && useDefualtHotKey === false) {
-      await joplin.settings.setValue('defualtHotkey', true);
+    if (useCustomHotKey === false) {
+      // await joplin.settings.setValue('defualtHotkey', true);
+
       alert(
         `Defualt hotkey will be used for the Random note Plugin:  ${defualtAccelerator}`
       );
-      accelerator = defualtAccelerator;
-    } else if (useCustomHotKey && useDefualtHotKey) {
+
+      test = defualtAccelerator;
+    } else {
       if (customHotKey.length > 0 && customHotKey != ' ') {
-        await joplin.settings.setValue('defualtHotkey', false);
-        accelerator = cleanedCustomHotKey;
+        test = cleanedCustomHotKey;
+        alert(`what we use, ${cleanedCustomHotKey}`);
       } else {
-        await joplin.settings.setValue('defualtHotkey', true);
+        // await joplin.settings.setValue('defualtHotkey', true);
         alert(
           `Custom Hotkey not specified, Defualt hotkey will be used for opening Random notes: ${defualtAccelerator}`
         );
-        accelerator = defualtAccelerator;
-      }
-    } else if (useDefualtHotKey === false && useCustomHotKey) {
-      if (customHotKey.length > 0 && customHotKey != ' ') {
-        accelerator = cleanedCustomHotKey;
-      } else {
-        await joplin.settings.setValue('defualtHotkey', true);
-        alert(
-          `Custom Hotkey not specified, Defualt hotkey will be used for opening Random notes: ${defualtAccelerator}`
-        );
-        accelerator = defualtAccelerator;
+
+        test = defualtAccelerator;
+        // await joplin.settings.setValue('defualtHotkey', false);
       }
     }
 
-    console.log(
-      'defualt key',
-      useDefualtHotKey,
-      'which is ',
-      defualtAccelerator
-    );
     console.log('custom key', customHotKey);
-    alert(`Testing alert shemacs: ${defualtAccelerator}`);
+    console.log('test key', test);
+
+    console.log('Use custom key', useCustomHotKey);
+    console.log('defualt key', defualtAccelerator);
+
+    // let useDefualtHotKey = await joplin.settings.value('defualtHotkey');
 
     await joplin.views.menuItems.create(
       'openRandomNoteMenu',
       'openRandomNote',
-      MenuItemLocation.Tools,
-      // create custom hotkey
-      { accelerator: accelerator }
+      MenuItemLocation.EditorContextMenu,
+      { accelerator: test }
     );
+
+    await joplin.views.menus.create('myMenu', 'Create Note From Text', [
+      {
+        commandName: 'openRandomNote',
+        accelerator: test,
+      },
+    ]);
   },
 });

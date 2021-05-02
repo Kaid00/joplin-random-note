@@ -65,6 +65,7 @@ To update the plugin framework, run `npm run update`.
 
 - [x] Open Random Note
 - [ ] Open Tagged Random Note
+- [ ] Open Random Note from Search
 
 ## License
 

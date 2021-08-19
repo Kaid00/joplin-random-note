@@ -7,6 +7,7 @@ import {
 
 joplin.plugins.register({
   onStart: async function () {
+    
     //Registering  Section
     await joplin.settings.registerSection('openRandomNoteSection', {
       label: 'Random Note',
@@ -14,32 +15,36 @@ joplin.plugins.register({
     });
 
     // Settings
-    await joplin.settings.registerSetting('showToolBarIcon', {
-      value: true,
-      type: SettingItemType.Bool,
-      section: 'openRandomNoteSection',
-      label: 'Show Tool Bar Button',
-      public: true,
-      description: 'Alternative to using Hotkeys to open random notes',
-    });
+    
+    await joplin.settings.registerSettings({
+      'showToolBarIcon': {
+        value: true,
+        type: SettingItemType.Bool,
+        section: 'openRandomNoteSection',
+        label: 'Show Tool Bar Button',
+        public: true,
+        description: 'Alternative to using Hotkeys to open random notes'
+      }, 
+      
+      'useCustomHotkey': {
+        value: false,
+        type: SettingItemType.Bool,
+        section: 'openRandomNoteSection',
+        label: 'Use Custom Hotkey',
+        public: true,
+        description: 'Enter custom hotkey after selecting this option'
+      },
 
-    await joplin.settings.registerSetting('useCustomHotkey', {
-      value: false,
-      type: SettingItemType.Bool,
-      section: 'openRandomNoteSection',
-      label: 'Use Custom Hotkey',
-      public: true,
-      description: 'Enter custom hotkey after selecting this option',
-    });
-
-    await joplin.settings.registerSetting('customHotkey', {
-      value: 'Ctrl+Alt+R',
-      type: SettingItemType.String,
-      section: 'openRandomNoteSection',
-      public: true,
-      description: 'Separate your keys with a +',
-      label: 'Enter Custom Hotkey',
-    });
+      'customHotkey': {
+        value: 'Ctrl+Alt+R',
+        type: SettingItemType.String,
+        section: 'openRandomNoteSection',
+        public: true,
+        description: 'Separate your keys with a +',
+        label: 'Enter Custom Hotkey',
+      }
+      
+    })
 
     // Commands
     await joplin.commands.register({

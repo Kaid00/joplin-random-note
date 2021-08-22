@@ -11,7 +11,7 @@ joplin.plugins.register({
     //Registering  Section
     await joplin.settings.registerSection('openRandomNoteSection', {
       label: 'Random Note',
-      iconName: 'fas fa-random',
+      iconName: 'fas fa-random'
     });
 
     // Settings
@@ -52,23 +52,53 @@ joplin.plugins.register({
       label: 'Open a random note',
       iconName: 'fas fa-random',
       execute: async () => {
+        let notesPerPage;
+        let notes = [];
+        let pageNumber = 1;
+
         // get all notes
-        const notes = await joplin.data.get(['notes'], { field: ['id'] });
+        do {
+          notesPerPage = await joplin.data.get(["notes"],  {
+            page: pageNumber++,
+            limit: 100,
+          })
+  
+          notes.push(notesPerPage);
+  
+        } while(notesPerPage.has_more != false);
+
+       
+        const noteIndex = Math.floor(Math.random() * notes.length);
+
         // If notes exist in vault
-        if (notes.items) {
+        
+        if (notes[noteIndex].items) {
+          // deconstructing the notes array
+          let simp_notes = [];
+          notes.forEach(el => {
+            console.log(el.items);
+
+            el.items.forEach(element => {
+              simp_notes.push(element)
+            })
+
+          }); 
+
           // get current note
           const currentNote = await joplin.workspace.selectedNote();
 
-          // excludes currently selected note
-          const filteredNotes = notes.items.filter((note) => {
+          // excluding currently selected note
+          const filteredNotes = simp_notes.filter((note) => {
             if (currentNote.id != note.id) {
               return note;
             }
           });
 
+          console.log('filtered notes;', filteredNotes);
+          
           // calculating a random note id
           const randomNoteId = Math.floor(Math.random() * filteredNotes.length);
-
+          console.log('random id', randomNoteId);
           await joplin.commands.execute(
             'openNote',
             filteredNotes[randomNoteId].id

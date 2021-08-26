@@ -1,7 +1,7 @@
 
 {
   "name": "joplin-plugin-random-note",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "https://github.com/Kaid00/joplin-random-note/blob/master/README.md",
   "scripts": {
     "dist": "webpack --joplin-plugin-config buildMain && webpack --joplin-plugin-config buildExtraScripts && webpack --joplin-plugin-config createArchive",

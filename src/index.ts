@@ -71,7 +71,7 @@ joplin.plugins.register({
         const noteIndex = Math.floor(Math.random() * notes.length);
 
         // If notes exist in vault
-        
+
         if (notes[noteIndex].items) {
           // deconstructing the notes array
           let simp_notes = [];
@@ -94,7 +94,7 @@ joplin.plugins.register({
             }
           });
 
-          console.log('filtered notes;', filteredNotes);
+          // console.log('filtered notes;', filteredNotes);
           
           // calculating a random note id
           const randomNoteId = Math.floor(Math.random() * filteredNotes.length);
